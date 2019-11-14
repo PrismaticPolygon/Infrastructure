@@ -2,8 +2,9 @@ import xmlschema
 import requests
 import gzip
 import os
+import tarfile
 
-def download():
+def download_schema():
 
     if not os.path.exists("TPS_Schema.xsd.gz"):
 
@@ -15,7 +16,7 @@ def download():
 
                 fp.write(chunk)
 
-def extract():
+def extract_schema():
 
     if not os.path.exists("TPS_Schema.xsd"):
 
@@ -23,6 +24,21 @@ def extract():
 
             out_file.write(in_file.read())
 
+def extract_data():
+
+    if not os.path.exists("TPS_Data.xml"):
+
+        with tarfile.open("TPS_Data.tar.bz2", "r:bz2") as tar:
+
+            for member in tar.getmembers():
+
+                member.path = "TPS_Data.xml"
+
+                tar.extract(member, "")
+
+
+extract_data()
+
 schema = xmlschema.XMLSchema("TPS_Schema.xsd")
 
-
+print(schema.is_valid("TPS_Data.xml"))
